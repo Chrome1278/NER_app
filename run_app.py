@@ -1,5 +1,6 @@
-from src.web.frontend import run
+from src.web.frontend import App
 
 
 if __name__ == "__main__":
-    run()
+    app = App()
+    app()

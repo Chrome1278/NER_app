@@ -1,52 +1,44 @@
-import time
-import sys
-
 import streamlit as st
 
-from src.model.test_model import predict
+from src.model.spacy_ner_model import SpacyModel
 
-def run():
 
-    st.set_page_config(
-        page_title="News NER",
-        page_icon=":globe_with_meridians:",
-        layout="centered"
-    )
+class App:
+    def __init__(self):
+        self.nlp_model = SpacyModel()
 
-    st.title('Hello!')
-
-    one_text_block, text_df_block = st.tabs(["Обработать текст", "Обработать набор текстов"])
-
-    with one_text_block:
-        st.header("ONE TEXT")
-
+    def _analyze_single_text(self):
         with st.form("text_to_analyze_form"):
             text_to_analyze = st.text_area(
                 'Введите ниже текст, который нужно проанализировать',
             )
-
-            # Every form must have a submit button.
             submitted = st.form_submit_button("Запуск анализа!")
+            st.markdown(' ')
             if submitted:
                 with st.spinner("Анализ текста..."):
-                    analyzed_text = predict(text_to_analyze)
-                    pass
-                st.success(f'Текст успешно обработан! Результат: {analyzed_text}')
+                    # todo: Делать ли предобработку текста ?
+                    output_entities = self.nlp_model.get_output_entities(text_to_analyze)
+                    if output_entities:
+                        st.subheader('**Результат обработки:**')
+                        entities_html = self.nlp_model.get_visualized_output(text_to_analyze)
+                        st.markdown(entities_html, unsafe_allow_html=True)
+                        st.markdown(' ')
+                    else:
+                        st.warning('Введённый текст нельзя обработать! '
+                                   'Возможно, текст слишком короткий.')
+            st.empty()
 
-        st.write("Outside the form")
-
-
-
-
-    with text_df_block:
-        st.header("MANY TEXT AS DATAFRAME")
-        # st.file_uploader("Choose a file")
-
-
-
-# items = st.text_area(
-#             'Insert your food items here (separated by `,`): ',
-#             pure_comma_separation(prompt_box, return_list=False),
-#         )
-#         items = pure_comma_separation(items, return_list=False)
-#         entered_items = st.empty()
+    def __call__(self):
+        st.set_page_config(
+            page_title="News NER",
+            page_icon=":globe_with_meridians:",
+            layout="centered"
+        )
+        st.title('Выявление именованных сущностей их новостных текстов')
+        single_text_block, many_texts_block = st.tabs(
+            ["Обработать текст", "Обработать набор текстов"]
+        )
+        with single_text_block:
+            self._analyze_single_text()
+        with many_texts_block:
+            st.info('Находится в разработке!')

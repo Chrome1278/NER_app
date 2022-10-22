@@ -1,5 +1,7 @@
 import streamlit as st
-
+import spacy_streamlit
+from spacy_streamlit import visualize_ner
+from spacy_streamlit import visualize_tokens
 from src.model.spacy_ner_model import SpacyModel
 
 
@@ -23,9 +25,12 @@ class App:
                         entities_html = self.nlp_model.get_visualized_output(text_to_analyze)
                         st.markdown(entities_html, unsafe_allow_html=True)
                         st.markdown(' ')
+                        st.markdown(' ')
+                        st.markdown('*Таблица с найденными сущностями:*')
+                        st.dataframe(self.nlp_model.get_info_table(text_to_analyze))
+                        st.markdown(' ')
                     else:
-                        st.warning('Введённый текст нельзя обработать! '
-                                   'Возможно, текст слишком короткий.')
+                        st.warning('В введённом тексте не найдено каких-либо сущностей!')
             st.empty()
 
     def __call__(self):

@@ -32,9 +32,18 @@ class App:
         st.set_page_config(
             page_title="News NER",
             page_icon=":globe_with_meridians:",
-            layout="centered"
+            layout="centered",
+
         )
-        st.title('Выявление именованных сущностей их новостных текстов')
+        st.title('Распознование именованных сущностей в новостных текстах')
+        st.markdown(
+            """
+            Выделяются следующие сущности:
+            - **LOC** - Локация
+            - **ORG** - Оганизация
+            - **PER** - Личность
+            """
+        )
         single_text_block, many_texts_block = st.tabs(
             ["Обработать текст", "Обработать набор текстов"]
         )

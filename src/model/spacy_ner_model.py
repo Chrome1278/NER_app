@@ -18,7 +18,7 @@ class SpacyModel:
         ent_svg = displacy.render(doc, style='ent', minify=True, jupyter=False)
         return ent_svg
 
-    def get_info_table(self, text: str) -> pd.DataFrame:
+    def get_entities_df(self, text: str) -> pd.DataFrame:
         doc = self.nlp(text)
         attrs = [
             "text",

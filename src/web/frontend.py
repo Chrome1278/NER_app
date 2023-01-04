@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from io import BytesIO
-from src.model.spacy_ner_model import SpacyModel
+from src.models.spacy_ner_model import SpacyModel
 
 
 class App:
@@ -62,7 +62,7 @@ class App:
         st.markdown(
             """
             Выделяются следующие сущности:
-            - **LOC** - Локация
+            - **LOC** - Локация (улицы, города, страны)
             - **ORG** - Оганизация
             - **PER** - Личность
             """

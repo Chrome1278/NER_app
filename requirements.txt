@@ -6,5 +6,5 @@ pandas==1.5.1
 
 xlsxwriter==3.0.3
 
-#spacy model: ru_core_news_md
+#spacy models: ru_core_news_md
 https://huggingface.co/spacy/ru_core_news_md/resolve/main/ru_core_news_md-any-py3-none-any.whl

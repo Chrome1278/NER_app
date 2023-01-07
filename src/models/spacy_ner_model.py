@@ -5,8 +5,32 @@ import pandas as pd
 
 class SpacyModel:
     def __init__(self):
+        new_vocab = ['PRO']
+        self.nlp = spacy.load('ru_core_news_md')
+        print(self.nlp.vocab.strings)
+        for item in new_vocab:
+            self.nlp.vocab.strings.add(item)
+        extended_nlp = spacy.load('./src/models/tuning_models_news/model-best')
+        print(extended_nlp.get_pipe('ner').labels)
+        print(self.nlp.get_pipe("ner").labels)
+        self.nlp.add_pipe(
+            'ner',
+            name="ner_extended",
+            source=extended_nlp,
+            after="ner",
+        )
+        print(self.nlp.get_pipe("ner").labels)
+
+        # self.extended_nlp = spacy.load('./src/models/tuning_models/model-best')
         # self.nlp = spacy.load('ru_core_news_md')
-        self.nlp = spacy.load('./src/models/tuning_models/model-best')
+        # self.nlp.replace_listeners("tok2vec", "ner", ["model.tok2vec"])
+        #
+        # self.extended_nlp.add_pipe(
+        #     "ner",
+        #     name="ner_tuned",
+        #     source=self.nlp,
+        #     after="ner",
+        # )
 
     def get_output_entities(self, text: str):
         nlp_gen = self.nlp.pipe([text], disable=["tagger", "parser"])

@@ -5,7 +5,9 @@ from tqdm import tqdm
 import spacy
 from spacy.tokens import DocBin
 
-with open('./data/annotations/annotations.json', 'r') as f:
+json_name = 'annotations_new.json'  # annotations.json
+
+with open(f'./data/annotations/{json_name}', 'r') as f:
     TRAIN_DATA = json.load(f)
 
 train_data = TRAIN_DATA['annotations']
@@ -27,4 +29,4 @@ for text, annot in tqdm(train_data):  # data in previous format
     doc.ents = ents  # label the text with the ents
     db.add(doc)
 
-db.to_disk("./data/annotations/annotations_data.spacy")  # save the docbin object
+db.to_disk(f"./data/annotations/{json_name}")  # save the docbin object

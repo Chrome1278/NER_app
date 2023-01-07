@@ -13,8 +13,8 @@ start = time.time()
 
 train(
     Path("./src/configs/config.cfg"),
-    Path("./src/models/tuning_models"),
-    overrides={"paths.train": "./data/annotations/annotations_data.spacy"}
+    Path("./src/models/tuning_models_news"),  # tuning_models
+    overrides={"paths.train": "./data/annotations/annotations_new_data.spacy"}  # annotations_data.spacy
 )
 
 end = time.time() - start

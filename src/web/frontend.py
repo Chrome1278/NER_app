@@ -4,6 +4,7 @@ from io import BytesIO
 
 from src.models.spacy_ner_model import SpacyModel
 from src.utils.work_with_df import DataFrameHandler
+from src.utils.visualization import get_hist_popular_entities
 from src.web.css_code import file_uploader_css
 
 
@@ -46,7 +47,7 @@ class App:
 
     def _analyze_dataset(self):
         st.markdown(' ')
-        st.subheader('**Загрузите файл с текстами в поле ниже**')
+        st.markdown('### **Загрузите файл с текстами в поле ниже**')
         st.markdown(file_uploader_css, unsafe_allow_html=True)
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'])
         if uploaded_dataset is not None:
@@ -72,9 +73,16 @@ class App:
                 my_bar.empty()
                 load_text.empty()
                 st.markdown('---')
+                st.markdown('### Результаты поиска именованных сущностей')
                 st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
                 st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
                 st.write(total_df)
+                st.markdown(' ')
+                st.markdown('#### Визуализация')
+                st.plotly_chart(
+                    get_hist_popular_entities(total_df),
+                    theme="streamlit",
+                    use_container_width=True)
             else:
                 st.warning('В загруженном наборе тексты не обнаружены!')
 

@@ -21,24 +21,20 @@ class App:
         if submitted:
             with st.spinner("Анализ текста..."):
                 # todo: Делать ли предобработку текста ?
-                output_entities = self.nlp_model.get_output_entities(text_to_analyze)
-                if output_entities:
+                entities_df = self.nlp_model.get_entities_df(text_to_analyze)
+                if not entities_df.empty:
                     st.markdown(' ')
                     st.markdown(' ')
                     st.subheader('**Результат обработки:**')
                     entities_html_visualize = self.nlp_model.get_visualized_output(text_to_analyze)
                     st.markdown(entities_html_visualize, unsafe_allow_html=True)
-                    st.markdown(' ')
-                    st.markdown(' ')
                     st.markdown('*Таблица с найденными сущностями:*')
-                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
                     st.dataframe(entities_df)
                     st.download_button(
                         label="Скачать таблицу с сущностями",
                         data=DataFrameHandler.convert_df_to_excel(entities_df),
                         file_name='entities_df.xlsx',
                     )
-                    st.markdown(' ')
                 else:
                     st.warning('В введённом тексте не найдено каких-либо сущностей!')
 
@@ -62,9 +58,8 @@ class App:
                 load_text.write('Анализ сущностей в датасете...')
                 total_df = pd.DataFrame()
                 for idx, text_to_analyze in news_df.iloc[:, :1].itertuples():
-                    output_entities = self.nlp_model.get_output_entities(text_to_analyze)
-                    if output_entities:
-                        entities_df = self.nlp_model.get_entities_df(text_to_analyze)
+                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
+                    if not entities_df.empty:
                         entities_df['text_id'] = idx
                         total_df = pd.concat([total_df, entities_df])
                     my_bar.progress(idx/texts_amount)

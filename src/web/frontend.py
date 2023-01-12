@@ -4,6 +4,7 @@ from io import BytesIO
 
 from src.models.spacy_ner_model import SpacyModel
 from src.utils.work_with_df import DataFrameHandler
+from src.web.css_code import file_uploader_css
 
 
 class App:
@@ -44,24 +45,37 @@ class App:
     def _analyze_dataset(self):
         st.markdown(' ')
         st.subheader('**Загрузите файл с текстами в поле ниже**')
+        st.markdown(file_uploader_css, unsafe_allow_html=True)
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'])
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')
-            st.write(f"Количество текстов, загруженных для анализа: **{news_df.shape[0]}**")
-            st.markdown(' ')
-
-            total_df = pd.DataFrame()
-            for idx, text_to_analyze in news_df.iloc[:, :1].itertuples():
-                output_entities = self.nlp_model.get_output_entities(text_to_analyze)
-                if output_entities:
-                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
-                    entities_df['text_id'] = idx
-                    total_df = pd.concat([total_df, entities_df])
-
-            st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
-            st.write(f"Количество уникальных сущностей: **{total_df.text.nunique()}**")
-            st.write(total_df)
+            st.write('*Загруженный датасет:*')
+            st.write(news_df)
+            texts_amount = news_df.shape[0]
+            if texts_amount > 0:
+                st.write(f"Количество текстов, загруженных для анализа: **{texts_amount}**")
+                st.markdown(' ')
+                st.markdown(' ')
+                my_bar = st.progress(0.0)
+                load_text = st.empty()
+                load_text.write('Анализ сущностей в датасете...')
+                total_df = pd.DataFrame()
+                for idx, text_to_analyze in news_df.iloc[:, :1].itertuples():
+                    output_entities = self.nlp_model.get_output_entities(text_to_analyze)
+                    if output_entities:
+                        entities_df = self.nlp_model.get_entities_df(text_to_analyze)
+                        entities_df['text_id'] = idx
+                        total_df = pd.concat([total_df, entities_df])
+                    my_bar.progress(idx/texts_amount)
+                my_bar.empty()
+                load_text.empty()
+                st.markdown('---')
+                st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
+                st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
+                st.write(total_df)
+            else:
+                st.warning('В загруженном наборе тексты не обнаружены!')
 
     def __call__(self):
         st.session_state.lang = 'ru'

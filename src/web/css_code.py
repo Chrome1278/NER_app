@@ -12,7 +12,7 @@ file_uploader_css = '''
  }
 [data-testid="stFileUploadDropzone"] div div small {display:none;}
 
-.edgvbvh9 {display:none;}
+.exg6vvm0 .exg6vvm15 .edgvbvh9 {display:none;}
 
 </style>
 '''

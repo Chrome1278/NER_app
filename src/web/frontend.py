@@ -30,10 +30,16 @@ class App:
                     st.markdown(entities_html_visualize, unsafe_allow_html=True)
                     st.markdown('*Таблица с найденными сущностями:*')
                     st.dataframe(entities_df)
+                    st.markdown(' ')
                     st.download_button(
-                        label="Скачать таблицу с сущностями",
+                        label="Скачать таблицу с сущностями в формате .csv",
+                        data=entities_df.to_csv().encode('utf-8'),
+                        file_name='entities_data.csv'
+                    )
+                    st.download_button(
+                        label="Скачать таблицу с сущностями в формате .xlsx",
                         data=DataFrameHandler.convert_df_to_excel(entities_df),
-                        file_name='entities_df.xlsx',
+                        file_name='entities_data.xlsx',
                     )
                 else:
                     st.warning('В введённом тексте не найдено каких-либо сущностей!')

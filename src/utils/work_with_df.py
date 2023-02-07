@@ -4,7 +4,6 @@ from io import BytesIO
 
 class DataFrameHandler:
 
-
     @staticmethod
     def convert_df_to_excel(df):
         output = BytesIO()

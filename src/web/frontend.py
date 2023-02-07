@@ -4,7 +4,7 @@ from io import BytesIO
 
 from src.models.spacy_ner_model import SpacyModel
 from src.utils.work_with_df import DataFrameHandler
-from src.utils.visualization import get_hist_popular_entities
+from src.utils.visualization import get_hist_popular_entities, get_entities_distr
 from src.web.css_code import file_uploader_css
 
 
@@ -76,13 +76,32 @@ class App:
                 st.markdown('### Результаты поиска именованных сущностей')
                 st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
                 st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
+                total_df = total_df.rename(columns={'text': 'entity'})
                 st.write(total_df)
                 st.markdown(' ')
                 st.markdown('#### Визуализация')
                 st.plotly_chart(
                     get_hist_popular_entities(total_df),
                     theme="streamlit",
-                    use_container_width=True)
+                    use_container_width=True
+                )
+                st.plotly_chart(
+                    get_entities_distr(total_df),
+                    theme="streamlit",
+                    use_container_width=True
+                )
+
+                st.markdown(' ')
+                st.download_button(
+                    label="Скачать таблицу с сущностями в формате .csv",
+                    data=total_df.to_csv().encode('utf-8'),
+                    file_name='entities_data.csv'
+                )
+                st.download_button(
+                    label="Скачать таблицу с сущностями в формате .xlsx",
+                    data=DataFrameHandler.convert_df_to_excel(total_df),
+                    file_name='entities_data.xlsx',
+                )
             else:
                 st.warning('В загруженном наборе тексты не обнаружены!')
 

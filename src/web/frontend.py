@@ -121,11 +121,18 @@ class App:
             - **PER** - Личность
             """
         )
-        single_text_block, many_texts_block = st.tabs(
-            ["Обработать текст", "Обработать набор текстов"]
+        single_text_block, many_texts_block, many_texts_with_time_block = st.tabs(
+            ["Обработать новость", "Обработать набор новостей", "Обработать хронологию новостей"]
         )
         with single_text_block:
             self._analyze_single_text()
         with many_texts_block:
             st.info('Находится в разработке!')
             self._analyze_dataset()
+        with many_texts_with_time_block:
+            st.info('Находится в разработке!')
+            # self._analyze_dataset()
+            # анализ трендов
+            # брать топ популярных сущностей в разрезе времени
+            # частота нахождения за день/неделю для каждой сущности (временной ряд)
+            # аналог google trends

@@ -15,7 +15,9 @@ class App:
     def _analyze_single_text(self):
         with st.form("text_to_analyze_form"):
             text_to_analyze = st.text_area(
-                'Введите ниже текст, который нужно проанализировать',
+                label='Введите ниже текст, который нужно проанализировать',
+                value='Брат короля Саудовской Аравии критикует ближневосточный'
+                            ' план президента США Джорджа Буша',
             )
             submitted = st.form_submit_button("Запуск анализа!")
             st.markdown(' ')
@@ -50,6 +52,9 @@ class App:
         st.markdown('### **Загрузите файл с текстами в поле ниже**')
         st.markdown(file_uploader_css, unsafe_allow_html=True)
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'])
+        load_example_dataset = st.button(label='Загрузить демо-набор')
+        if load_example_dataset:
+            uploaded_dataset = './data/processed/demo_news.txt'
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')

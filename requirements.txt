@@ -4,6 +4,8 @@ streamlit==1.18.0
 spacy==3.5.0
 pandas==1.5.3
 xlsxwriter==3.0.3
+plotly==5.11.0
 
 #spacy models: ru_core_news_md
 https://huggingface.co/spacy/ru_core_news_md/resolve/main/ru_core_news_md-any-py3-none-any.whl
+

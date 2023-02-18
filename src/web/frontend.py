@@ -4,7 +4,8 @@ from io import BytesIO
 
 from src.models.spacy_ner_model import SpacyModel
 from src.utils.work_with_df import DataFrameHandler
-from src.utils.visualization import get_hist_popular_entities, get_entities_distr
+from src.utils.visualization import get_hist_popular_entities,\
+    get_entities_distr, get_entities_timeseries
 from src.web.css_code import file_uploader_css
 
 
@@ -50,9 +51,10 @@ class App:
     def _analyze_dataset(self):
         st.markdown(' ')
         st.markdown('### **Загрузите файл с текстами в поле ниже**')
+        st.markdown('_Файл должен содержать лишь одну колонку с текстами_')
         st.markdown(file_uploader_css, unsafe_allow_html=True)
-        uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'])
-        load_example_dataset = st.button(label='Загрузить демо-набор')
+        uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_only')
+        load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_only')
         if load_example_dataset:
             uploaded_dataset = './data/processed/demo_news.txt'
         if uploaded_dataset is not None:
@@ -81,7 +83,7 @@ class App:
                 st.markdown('### Результаты поиска именованных сущностей')
                 st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
                 st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
-                total_df = total_df.rename(columns={'text': 'entity'})
+                total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
                 st.write(total_df)
                 st.markdown(' ')
                 st.markdown('#### Визуализация')
@@ -100,12 +102,82 @@ class App:
                 st.download_button(
                     label="Скачать таблицу с сущностями в формате .csv",
                     data=total_df.to_csv().encode('utf-8'),
-                    file_name='entities_data.csv'
+                    file_name='entities_data.csv',
+                    key='csv_texts_only'
                 )
                 st.download_button(
                     label="Скачать таблицу с сущностями в формате .xlsx",
                     data=DataFrameHandler.convert_df_to_excel(total_df),
                     file_name='entities_data.xlsx',
+                    key='xlsx_texts_only'
+                )
+            else:
+                st.warning('В загруженном наборе тексты не обнаружены!')
+
+    def _analyze_dataset_with_date(self):
+        st.markdown(' ')
+        st.markdown('### **Загрузите файл с текстами в поле ниже**')
+        st.markdown('_Файл должен содержать две колонки: с датами и текстами_')
+        st.markdown(file_uploader_css, unsafe_allow_html=True)
+        uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_with_date')
+        load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_with_date')
+        if load_example_dataset:
+            uploaded_dataset = './data/processed/ria_news_december_small.csv'
+        if uploaded_dataset is not None:
+            news_df = pd.read_csv(uploaded_dataset)
+            st.markdown(' ')
+            st.write('*Загруженный датасет:*')
+            st.write(news_df)
+            texts_amount = news_df.shape[0]
+            if texts_amount > 0:
+                st.write(f"Количество текстов, загруженных для анализа: **{texts_amount}**")
+                st.markdown(' ')
+                st.markdown(' ')
+                my_bar = st.progress(0.0)
+                load_text = st.empty()
+                load_text.write('Анализ сущностей в датасете...')
+                total_df = pd.DataFrame()
+                for idx, date, text_to_analyze in news_df.iloc[:, :2].itertuples():
+                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
+                    if not entities_df.empty:
+                        entities_df['text_id'] = idx
+                        entities_df['text_date'] = date
+                        total_df = pd.concat([total_df, entities_df])
+                    my_bar.progress(idx / texts_amount)
+                my_bar.empty()
+                load_text.empty()
+                st.markdown('---')
+                st.markdown('### Результаты поиска именованных сущностей')
+                st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
+                st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
+                total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
+                st.write(total_df)
+                st.markdown(' ')
+                st.markdown('#### Визуализация')
+                st.plotly_chart(
+                    get_hist_popular_entities(total_df),
+                    theme="streamlit",
+                    use_container_width=True
+                )
+
+                st.plotly_chart(
+                    get_entities_timeseries(total_df),
+                    theme="streamlit",
+                    use_container_width=True
+                )
+
+                st.markdown(' ')
+                st.download_button(
+                    label="Скачать таблицу с сущностями в формате .csv",
+                    data=total_df.to_csv().encode('utf-8'),
+                    file_name='entities_data.csv',
+                    key='csv_texts_only'
+                )
+                st.download_button(
+                    label="Скачать таблицу с сущностями в формате .xlsx",
+                    data=DataFrameHandler.convert_df_to_excel(total_df),
+                    file_name='entities_data.xlsx',
+                    key='xlsx_texts_only'
                 )
             else:
                 st.warning('В загруженном наборе тексты не обнаружены!')
@@ -126,7 +198,7 @@ class App:
             - **PER** - Личность
             """
         )
-        single_text_block, many_texts_block, many_texts_with_time_block = st.tabs(
+        single_text_block, many_texts_block, many_texts_with_date_block = st.tabs(
             ["Обработать новость", "Обработать набор новостей", "Обработать хронологию новостей"]
         )
         with single_text_block:
@@ -134,10 +206,6 @@ class App:
         with many_texts_block:
             st.info('Находится в разработке!')
             self._analyze_dataset()
-        with many_texts_with_time_block:
+        with many_texts_with_date_block:
             st.info('Находится в разработке!')
-            # self._analyze_dataset()
-            # анализ трендов
-            # брать топ популярных сущностей в разрезе времени
-            # частота нахождения за день/неделю для каждой сущности (временной ряд)
-            # аналог google trends
+            self._analyze_dataset_with_date()

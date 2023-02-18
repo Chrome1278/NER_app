@@ -39,3 +39,25 @@ def get_entities_distr(df):
     fig.update_layout(font=dict(size=16))
     fig.update_layout(bargap=0.2)
     return fig
+
+
+def get_entities_timeseries(df):
+    df = df.groupby(['lemma_', 'text_date']).size().reset_index(name='counts')
+    df = df.sort_values(by=['text_date'], ascending=True)  # [-10:]
+
+    top_lemmas_df = df.groupby(['lemma_']).size().reset_index(name='counts') \
+        .sort_values(by=['counts'], ascending=True)[-10:]
+    df = df[df.lemma_.isin(top_lemmas_df.lemma_)]
+
+    fig = px.line(
+        df,
+        y="counts",
+        x="text_date",
+        color="lemma_",
+        title="Временной ряд по топ-10 найденным сущностям",
+        height=600,
+    )
+    fig.update_layout(xaxis_title="Виды сущностей")
+    fig.update_layout(yaxis_title="Даты")
+    fig.update_layout(font=dict(size=16))
+    return fig

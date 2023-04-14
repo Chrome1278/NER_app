@@ -2,6 +2,7 @@ from nerus import load_nerus
 from itertools import islice
 import json
 
+# download dataset from https://github.com/natasha/nerus
 ner_docs = load_nerus('./data/raw/nerus_lenta.conllu.gz')
 ner_classes = ["LOC", "ORG", "PER"]
 

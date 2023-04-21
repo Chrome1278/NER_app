@@ -5,8 +5,8 @@ import pandas as pd
 
 class SpacyModel:
     def __init__(self):
-        # self.nlp = spacy.load('ru_core_news_md')
-        self.nlp = spacy.load('./src/models/model_ner/')
+        self.nlp = spacy.load('ru_core_news_md')
+        # self.nlp = spacy.load('./src/models/model_ner/')
 
     def get_output_entities(self, text: str):
         nlp_gen = self.nlp.pipe([text], disable=["tagger", "parser"])

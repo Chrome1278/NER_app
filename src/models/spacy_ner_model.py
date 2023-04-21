@@ -1,12 +1,14 @@
 import spacy
 from spacy import displacy
 import pandas as pd
+import pathlib
 
 
 class SpacyModel:
     def __init__(self):
-        self.nlp = spacy.load('ru_core_news_md')
-        # self.nlp = spacy.load('./src/models/model_ner/')
+        # self.nlp = spacy.load('ru_core_news_md')
+        path = pathlib.Path(__file__).parent / 'model_ner/'
+        self.nlp = spacy.load(path)
 
     def get_output_entities(self, text: str):
         nlp_gen = self.nlp.pipe([text], disable=["tagger", "parser"])

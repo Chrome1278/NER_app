@@ -13,6 +13,37 @@ class App:
     def __init__(self):
         self.nlp_model = SpacyModel()
 
+    @staticmethod
+    @st.cache_resource(max_entries=1, show_spinner=False)
+    def get_entities_df(_nlp_model, news_df: pd.DataFrame, texts_amount: int, timeseries: bool):
+        my_bar = st.progress(0.0)
+        load_text = st.empty()
+        load_text.write('Анализ сущностей в датасете...')
+        total_df = pd.DataFrame()
+        if timeseries:
+            for idx, date, text_to_analyze in news_df.iloc[:, :2].itertuples():
+                entities_df = _nlp_model.get_entities_df(text_to_analyze)
+                if not entities_df.empty:
+                    entities_df['text_id'] = idx
+                    entities_df['text_date'] = date
+                    total_df = pd.concat([total_df, entities_df])
+                my_bar.progress(idx / texts_amount)
+        else:
+            for idx, text_to_analyze in news_df.iloc[:, :2].itertuples():
+                entities_df = _nlp_model.get_entities_df(text_to_analyze)
+                if not entities_df.empty:
+                    entities_df['text_id'] = idx
+                    total_df = pd.concat([total_df, entities_df])
+                my_bar.progress(idx / texts_amount)
+        my_bar.empty()
+        load_text.empty()
+        total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
+        st.markdown('---')
+        st.markdown('### Результаты поиска именованных сущностей')
+        st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
+        st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
+        return total_df
+
     def _analyze_single_text(self):
         with st.form("text_to_analyze_form"):
             text_to_analyze = st.text_area(
@@ -67,26 +98,20 @@ class App:
                 st.write(f"Количество текстов, загруженных для анализа: **{texts_amount}**")
                 st.markdown(' ')
                 st.markdown(' ')
-                my_bar = st.progress(0.0)
-                load_text = st.empty()
-                load_text.write('Анализ сущностей в датасете...')
-                total_df = pd.DataFrame()
-                for idx, text_to_analyze in news_df.iloc[:, :1].itertuples():
-                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
-                    if not entities_df.empty:
-                        entities_df['text_id'] = idx
-                        total_df = pd.concat([total_df, entities_df])
-                    my_bar.progress(idx/texts_amount)
-                my_bar.empty()
-                load_text.empty()
-                st.markdown('---')
-                st.markdown('### Результаты поиска именованных сущностей')
-                st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
-                st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
-                total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
+                total_df = self.get_entities_df(self.nlp_model,
+                                                news_df,
+                                                texts_amount,
+                                                timeseries=False)
                 st.write(total_df)
                 st.markdown(' ')
                 st.markdown('#### Визуализация')
+
+                with st.form("slider_form"):
+                    top_ents_number = st.slider(label='Выбирите количество сущностей в топе',
+                                                min_value=3,
+                                                max_value=50)
+                    submit = st.form_submit_button("Submit Slider Values")
+                # st.write(top_ents_number)
                 st.plotly_chart(
                     get_hist_popular_entities(total_df),
                     theme="streamlit",
@@ -133,24 +158,10 @@ class App:
                 st.write(f"Количество текстов, загруженных для анализа: **{texts_amount}**")
                 st.markdown(' ')
                 st.markdown(' ')
-                my_bar = st.progress(0.0)
-                load_text = st.empty()
-                load_text.write('Анализ сущностей в датасете...')
-                total_df = pd.DataFrame()
-                for idx, date, text_to_analyze in news_df.iloc[:, :2].itertuples():
-                    entities_df = self.nlp_model.get_entities_df(text_to_analyze)
-                    if not entities_df.empty:
-                        entities_df['text_id'] = idx
-                        entities_df['text_date'] = date
-                        total_df = pd.concat([total_df, entities_df])
-                    my_bar.progress(idx / texts_amount)
-                my_bar.empty()
-                load_text.empty()
-                st.markdown('---')
-                st.markdown('### Результаты поиска именованных сущностей')
-                st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
-                st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
-                total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
+                total_df = self.get_entities_df(self.nlp_model,
+                                                news_df,
+                                                texts_amount,
+                                                timeseries=True)
                 st.write(total_df)
                 st.markdown(' ')
                 st.markdown('#### Визуализация')

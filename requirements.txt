@@ -1,11 +1,11 @@
-streamlit==1.18.0
+streamlit==1.21.0
 # torch==1.12.1
 # transformers==4.23.1
+pymorphy2==0.9.1
 spacy==3.5.0
 pandas==1.5.3
 xlsxwriter==3.0.3
 plotly==5.11.0
 
 #spacy models: ru_core_news_md
-https://huggingface.co/spacy/ru_core_news_md/resolve/main/ru_core_news_md-any-py3-none-any.whl
-
+https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.5.0/ru_core_news_sm-3.5.0-py3-none-any.whl

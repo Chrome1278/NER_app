@@ -55,7 +55,6 @@ class App:
             st.markdown(' ')
         if submitted:
             with st.spinner("Анализ текста..."):
-                # todo: Делать ли предобработку текста ?
                 entities_df = self.nlp_model.get_entities_df(text_to_analyze)
                 if not entities_df.empty:
                     st.markdown(' ')
@@ -87,7 +86,7 @@ class App:
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_only')
         load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_only')
         if load_example_dataset:
-            uploaded_dataset = './data/processed/demo_news.txt'
+            uploaded_dataset = './data/processed/ria_news_december_small.csv'
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')
@@ -106,12 +105,6 @@ class App:
                 st.markdown(' ')
                 st.markdown('#### Визуализация')
 
-                with st.form("slider_form"):
-                    top_ents_number = st.slider(label='Выбирите количество сущностей в топе',
-                                                min_value=3,
-                                                max_value=50)
-                    submit = st.form_submit_button("Submit Slider Values")
-                # st.write(top_ents_number)
                 st.plotly_chart(
                     get_hist_popular_entities(total_df),
                     theme="streamlit",
@@ -147,7 +140,7 @@ class App:
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_with_date')
         load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_with_date')
         if load_example_dataset:
-            uploaded_dataset = './data/processed/ria_news_december_small.csv'
+            uploaded_dataset = './data/processed/ria_news_december_small_dates.csv'
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')
@@ -212,6 +205,10 @@ class App:
         single_text_block, many_texts_block, many_texts_with_date_block = st.tabs(
             ["Обработать новость", "Обработать набор новостей", "Обработать хронологию новостей"]
         )
+
+        if 'texts_block' not in st.session_state:
+            st.session_state.texts_block = None
+
         with single_text_block:
             self._analyze_single_text()
         with many_texts_block:

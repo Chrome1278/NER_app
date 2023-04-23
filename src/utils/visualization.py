@@ -61,3 +61,29 @@ def get_entities_timeseries(df):
     fig.update_layout(yaxis_title="Даты")
     fig.update_layout(font=dict(size=16))
     return fig
+
+
+def get_entities_correlation(df):
+    df = df.groupby(['lemma_', 'text_date']).size().reset_index(name='counts')
+    df = df.sort_values(by=['text_date'], ascending=True)  # [-10:]
+
+    top_lemmas_df = df.groupby(['lemma_']).size().reset_index(name='counts') \
+        .sort_values(by=['counts'], ascending=True)[-10:]
+    df = df[df.lemma_.isin(top_lemmas_df.lemma_)]
+
+    df_pivot = df.pivot_table(
+        index='text_date', columns='lemma_', values='counts'
+    ).reset_index(drop=True)
+    df_pivot = df_pivot.rename_axis(None, axis=1)
+
+    corr_matrix = df_pivot.corr()
+    fig = px.imshow(
+        corr_matrix,
+        x=corr_matrix.columns,
+        y=corr_matrix.index,
+        title="Корреляция между топ-10 найденными сущностями",
+        height=700,
+    )
+    fig.update_layout(font=dict(size=16))
+    return fig
+

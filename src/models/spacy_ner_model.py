@@ -31,9 +31,18 @@ class SpacyModel:
             "start_char",
             "end_char",
         ]
+        attrs_ru = [
+            "сущность",
+            "лемма",
+            "категория",
+            "номер первого слова",
+            "номер последнего слова",
+            "номер первого символа",
+            "номер последнего символа",
+        ]
         data = [
             [str(getattr(ent, attr)) for attr in attrs]
             for ent in doc.ents
         ]
-        df = pd.DataFrame(data, columns=attrs)
+        df = pd.DataFrame(data, columns=attrs_ru)
         return df

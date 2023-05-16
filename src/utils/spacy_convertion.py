@@ -6,7 +6,7 @@ import spacy
 from spacy.tokens import DocBin
 import re
 
-json_name = 'labelled_annotations_val'
+# json_name = 'labelled_annotations'
 
 
 def trim_entity_spans(data: list) -> list:
@@ -39,29 +39,36 @@ def trim_entity_spans(data: list) -> list:
     return cleaned_data
 
 
-with open(f'./data/annotations/{json_name}.json', 'r', encoding='utf8') as f:
-    TRAIN_DATA = json.load(f)
+def convert_to_spacy(json_names: list):
 
-train_data = TRAIN_DATA['annotations']
-train_data = [tuple(i) for i in train_data]
-train_data = trim_entity_spans(train_data)
+    for json_name in json_names:
+        with open(f'./data/annotations/{json_name}.json', 'r', encoding='utf8') as f:
+            loaded_data = json.load(f)
 
-# nlp = spacy.blank("ru") # load a new spacy model
-nlp = spacy.load("ru_core_news_md")  # load other spacy model
-db = DocBin()  # create a DocBin object
+        train_data = loaded_data['annotations']
+        train_data = [tuple(i) for i in train_data]
+        train_data = trim_entity_spans(train_data)
 
-for text, annot in tqdm(train_data):  # data in previous format
-    doc = nlp.make_doc(text)  # create doc object from text
-    ents = []
-    if annot["entities"] is None:
-        continue
-    for start, end, label in annot["entities"]:  # add character indexes
-        span = doc.char_span(start, end, label=label, alignment_mode="contract")
-        if span is None:
-            continue
-        else:
-            ents.append(span)
-    doc.ents = ents  # label the text with the ents
-    db.add(doc)
+        # nlp = spacy.blank("ru") # load a new spacy model
+        nlp = spacy.load("ru_core_news_md")  # load other spacy model
+        db = DocBin()  # create a DocBin object
 
-db.to_disk(f"./data/annotations/{json_name}.spacy")  # save the docbin object
+        for text, annot in tqdm(train_data):  # data in previous format
+            doc = nlp.make_doc(text)  # create doc object from text
+            ents = []
+            if annot["entities"] is None:
+                continue
+            for start, end, label in annot["entities"]:  # add character indexes
+                span = doc.char_span(start, end, label=label, alignment_mode="contract")
+                if span is None:
+                    continue
+                else:
+                    ents.append(span)
+            doc.ents = ents  # label the text with the ents
+            db.add(doc)
+
+        db.to_disk(f"./data/annotations/{json_name}.spacy")  # save the docbin object
+
+
+convert_to_spacy(['labelled_annotations_large', 'labelled_annotations_large_val'])
+

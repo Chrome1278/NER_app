@@ -1,11 +1,14 @@
 streamlit==1.21.0
-# torch==1.12.1
+torch==2.0.0 #1.12.1
+torchvision==0.15.1
 # transformers==4.23.1
 pymorphy2==0.9.1
 spacy==3.5.0
+# spacy-transformers==1.2.3
 pandas==1.5.3
 xlsxwriter==3.0.3
 plotly==5.11.0
+# cupy-cuda12x==12.0.0
 
 #spacy models: ru_core_news_md
 https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.5.0/ru_core_news_sm-3.5.0-py3-none-any.whl

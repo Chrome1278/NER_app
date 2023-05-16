@@ -21,29 +21,23 @@ def get_hist_popular_entities(df):
         yaxis_title="Леммы слов",
         legend_title="Категории",
         title_font=dict(
-            # family="Courier New, monospace",
             size=20,
             color="black"
         ),
         legend_font=dict(
-            # family="Courier New, monospace",
             size=16,
             color="black"
         ),
         legend_title_font=dict(
-            # family="Courier New, monospace",
             size=18,
             color="black"
         ),
         legend_grouptitlefont=dict(
-            # family="Courier New, monospace",
             size=18,
             color="black"
         ),
         font=dict(
-            # family="Courier New, monospace",
             size=16,
-            # color="black"
         ),
         bargap=0.2,
     )
@@ -63,34 +57,27 @@ def get_entities_distr(df):
         height=500,
     )
     fig.update_layout(
-        # title="Plot Title",
         xaxis_title="Категории сущностей",
         yaxis_title="Количество нахождений",
         legend_title="Категории",
         title_font=dict(
-            # family="Courier New, monospace",
             size=20,
             color="black"
         ),
         legend_font=dict(
-            # family="Courier New, monospace",
             size=16,
             color="black"
         ),
         legend_title_font=dict(
-            # family="Courier New, monospace",
             size=18,
             color="black"
         ),
         legend_grouptitlefont=dict(
-            # family="Courier New, monospace",
             size=18,
             color="black"
         ),
         font=dict(
-            # family="Courier New, monospace",
             size=16,
-            # color="black"
         ),
         bargap=0.2,
     )
@@ -115,7 +102,6 @@ def get_entities_timeseries(df):
     )
 
     fig.update_layout(
-        # title="Plot Title",
         yaxis_title="Количество упоминаний",
         xaxis_title="Даты",
         legend_title="Леммы",

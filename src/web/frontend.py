@@ -236,8 +236,6 @@ class App:
         with single_text_block:
             self._analyze_single_text()
         with many_texts_block:
-            st.info('Находится в разработке!')
             self._analyze_dataset()
         with many_texts_with_date_block:
-            st.info('Находится в разработке!')
             self._analyze_dataset_with_date()

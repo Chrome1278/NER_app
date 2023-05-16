@@ -24,24 +24,24 @@ class App:
             for idx, date, text_to_analyze in news_df.iloc[:, :2].itertuples():
                 entities_df = _nlp_model.get_entities_df(text_to_analyze)
                 if not entities_df.empty:
-                    entities_df['text_id'] = idx
-                    entities_df['text_date'] = date
+                    entities_df['номер_текста'] = idx
+                    entities_df['дата_текста'] = date
                     total_df = pd.concat([total_df, entities_df])
                 my_bar.progress(idx / texts_amount)
         else:
             for idx, text_to_analyze in news_df.iloc[:, :2].itertuples():
                 entities_df = _nlp_model.get_entities_df(text_to_analyze)
                 if not entities_df.empty:
-                    entities_df['text_id'] = idx
+                    entities_df['номер_текста'] = idx
                     total_df = pd.concat([total_df, entities_df])
                 my_bar.progress(idx / texts_amount)
         my_bar.empty()
         load_text.empty()
-        total_df = total_df.rename(columns={'text': 'entity'}).reset_index(drop=True)
+        total_df = total_df.reset_index(drop=True)
         st.markdown('---')
         st.markdown('### Результаты поиска именованных сущностей')
         st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
-        st.write(f"Количество уникальных сущностей: **{total_df.lemma_.nunique()}**")
+        st.write(f"Количество уникальных сущностей: **{total_df['лемма'].nunique()}**")
         return total_df
 
     def _analyze_single_text(self):
@@ -86,7 +86,7 @@ class App:
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_only')
         load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_only')
         if load_example_dataset:
-            uploaded_dataset = './data/processed/ria_news_december_small.csv'
+            uploaded_dataset = './data/processed/ria_news_jan_small.csv'
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')
@@ -140,7 +140,7 @@ class App:
         uploaded_dataset = st.file_uploader(label='', type=['csv', 'txt'], key='upload_texts_with_date')
         load_example_dataset = st.button(label='Загрузить демо-набор', key='demo_texts_with_date')
         if load_example_dataset:
-            uploaded_dataset = './data/processed/ria_news_december_small_dates.csv'
+            uploaded_dataset = './data/processed/ria_news_jan_small_dates.csv'
         if uploaded_dataset is not None:
             news_df = pd.read_csv(uploaded_dataset)
             st.markdown(' ')

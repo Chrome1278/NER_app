@@ -24,15 +24,15 @@ class App:
             for idx, date, text_to_analyze in news_df.iloc[:, :2].itertuples():
                 entities_df = _nlp_model.get_entities_df(text_to_analyze)
                 if not entities_df.empty:
-                    entities_df['номер_текста'] = idx
-                    entities_df['дата_текста'] = date
+                    entities_df['номер текста'] = idx
+                    entities_df['дата текста'] = date
                     total_df = pd.concat([total_df, entities_df])
                 my_bar.progress(idx / texts_amount)
         else:
             for idx, text_to_analyze in news_df.iloc[:, :2].itertuples():
                 entities_df = _nlp_model.get_entities_df(text_to_analyze)
                 if not entities_df.empty:
-                    entities_df['номер_текста'] = idx
+                    entities_df['номер текста'] = idx
                     total_df = pd.concat([total_df, entities_df])
                 my_bar.progress(idx / texts_amount)
         my_bar.empty()
@@ -41,7 +41,7 @@ class App:
         st.markdown('---')
         st.markdown('### Результаты поиска именованных сущностей')
         st.write(f"Количество найденных сущностей: **{total_df.shape[0]}**")
-        st.write(f"Количество уникальных сущностей: **{total_df['лемма'].nunique()}**")
+        st.write(f"Количество уникальных сущностей: **{total_df['именованная сущность (норм.)'].nunique()}**")
         return total_df
 
     def _analyze_single_text(self):
@@ -221,9 +221,9 @@ class App:
         st.markdown(
             """
             Для распознавания доступны следующие именованные сущности:
-            - **LOC** ⸺ Локация
-            - **ORG** ⸺ Оганизация
-            - **PER** ⸺ Личность
+            - **МЕС** ⸺ Местоположение
+            - **ОРГ** ⸺ Организация
+            - **ЛИЧ** ⸺ Личность
             """
         )
         single_text_block, many_texts_block, many_texts_with_date_block = st.tabs(

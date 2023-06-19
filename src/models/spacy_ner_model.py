@@ -11,24 +11,16 @@ class SpacyModel:
         path = pathlib.Path(__file__).parent / 'model_ner/'
         self.nlp = spacy.load(path)
         self.nlp.add_pipe('set_custom_ner_labels', after="ner")
-        self.ner_labels = {
+        ner_labels = {
             "PER": "ЛИЧ",
             "ORG": "ОРГ",
             "LOC": "МЕС"
         }
-        Doc.set_extension('ner_labels', force=True, default=self.ner_labels)
+        Doc.set_extension('ner_labels', force=True, default=ner_labels)
 
     @staticmethod
     @Language.component("set_custom_ner_labels")
     def set_custom_ner_labels(doc):
-        # ner_labels = {
-        #     "PER": "ИМЯ",
-        #     "ORG": "ОРГ",
-        #     "LOC": "МЕСТО"
-        # }
-        # for ent in doc.ents:
-        #     if ent.label_ in ner_labels:
-        #         ent.merge(tag=0, lemma=ent.text, label=ner_labels[ent.label_])
         ner_labels = {
             "PER": "ЛИЧ",
             "ORG": "ОРГ",
@@ -71,13 +63,6 @@ class SpacyModel:
 
     def get_visualized_output(self, text: str):
         doc = self.nlp(text)
-        # for ent in doc.ents:
-        #     print(ent.text, ent.start_char, ent.end_char, ent.label_)
-        # print(doc.ents )
-        # doc._.ner_labels = self.ner_labels
-        # print(doc.ents)
-        # print(doc._.ner_labels)
-        # options = {"ents": ["ПЕР", "ЛОК", "ОРГ"]}
         colors = {"ЛИЧ": "#FFB266", "ОРГ": "#66FF66", "МЕС": "#66FFFF"}
         options = {"ents": ['ЛИЧ', 'МЕС', "ОРГ"], "colors": colors}
         ent_svg = displacy.render(
@@ -99,8 +84,6 @@ class SpacyModel:
             "end_char",
         ]
         attrs_ru = [
-            # "сущность",
-            # "именованная сущность",
             "именованная сущность",
             "именованная сущность (норм.)",
             "категория",

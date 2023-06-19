@@ -11,12 +11,12 @@ class SpacyModel:
         path = pathlib.Path(__file__).parent / 'model_ner/'
         self.nlp = spacy.load(path)
         self.nlp.add_pipe('set_custom_ner_labels', after="ner")
-        ner_labels = {
+        self.ner_labels = {
             "PER": "ЛИЧ",
             "ORG": "ОРГ",
             "LOC": "МЕС"
         }
-        Doc.set_extension('ner_labels', force=True, default=ner_labels)
+        Doc.set_extension('ner_labels', force=True, default=self.ner_labels)
 
     @staticmethod
     @Language.component("set_custom_ner_labels")

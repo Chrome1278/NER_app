@@ -2,6 +2,8 @@ from datetime import datetime
 import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
+import locale
+locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 def get_hist_popular_entities(df):
     df = df.groupby(['именованная сущность (норм.)', 'категория']).size().reset_index(name='counts')
